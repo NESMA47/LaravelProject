@@ -21,7 +21,7 @@ return new class extends Migration
             $table->index(['candidate_id', 'is_default']);
         });
 
-        DB::statement('CREATE UNIQUE INDEX resumes_candidate_id_is_default_unique ON resumes (candidate_id, is_default) WHERE is_default = true');
+        // Partial unique index (PostgreSQL-only) removed; enforced via ResumeObserver in application layer
     }
 
     public function down(): void

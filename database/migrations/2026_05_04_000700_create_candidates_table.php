@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('website_url', 500)->nullable();
             $table->boolean('is_open_to_work')->default(true);
             $table->string('preferred_job_type', 20)->nullable();
-            $table->jsonb('preferred_locations')->default(DB::raw("'[]'::jsonb"));
+            $table->jsonb('preferred_locations')->nullable();
             $table->integer('expected_salary_min')->nullable();
             $table->integer('expected_salary_max')->nullable();
             $table->char('currency', 3)->default('EGP');
