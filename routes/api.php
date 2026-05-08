@@ -78,14 +78,20 @@ Route::get('employers/{slug}/jobs', [EmployerJobController::class, 'indexByEmplo
 Route::get('jobs/{id}', [EmployerJobController::class, 'show']);
 
 // Employer endpoints
+// Employer endpoints
 Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->group(function () {
     Route::get('profile', [EmployerProfileController::class, 'show']);
     Route::put('profile', [EmployerProfileController::class, 'update']);
 
-    Route::get('jobs', [EmployerJobController::class, 'index']);
-    Route::post('jobs', [EmployerJobController::class, 'store']);
-    Route::patch('jobs/{id}', [EmployerJobController::class, 'update']);
-    Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']);
+    // --- تعديل قسم الوظائف هنا ---
+    Route::get('jobs', [EmployerJobController::class, 'index']);          // عرض كل وظائف صاحب العمل
+    Route::post('jobs', [EmployerJobController::class, 'store']);         // إنشاء وظيفة جديدة
+    
+    Route::get('jobs/{id}', [EmployerJobController::class, 'show']);      
+    
+    Route::put('jobs/{id}', [EmployerJobController::class, 'update']);    
+    
+    Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']); // تغيير الحالة فقط
     Route::delete('jobs/{id}', [EmployerJobController::class, 'destroy']);
 });
 
