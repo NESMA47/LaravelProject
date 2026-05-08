@@ -38,7 +38,9 @@ return new class extends Migration
             $table->index('preferred_job_type');
         });
 
-        DB::statement('ALTER TABLE candidates ADD CONSTRAINT candidates_profile_completion_score_check CHECK (profile_completion_score >= 0 AND profile_completion_score <= 100)');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE candidates ADD CONSTRAINT candidates_profile_completion_score_check CHECK (profile_completion_score >= 0 AND profile_completion_score <= 100)');
+        }
     }
 
     public function down(): void

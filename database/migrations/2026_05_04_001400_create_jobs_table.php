@@ -49,9 +49,11 @@ return new class extends Migration
             $table->index(['city', 'country', 'status']);
         });
 
-        DB::statement("ALTER TABLE jobs ADD CONSTRAINT jobs_status_check CHECK (status IN ('draft', 'pending_review', 'active', 'paused', 'closed', 'rejected', 'expired'))");
-        DB::statement('ALTER TABLE jobs ADD CONSTRAINT jobs_vacancies_check CHECK (vacancies > 0)');
-        DB::statement('CREATE FULLTEXT INDEX jobs_fulltext_search ON jobs (title, description, requirements)');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE jobs ADD CONSTRAINT jobs_status_check CHECK (status IN ('draft', 'pending_review', 'active', 'paused', 'closed', 'rejected', 'expired'))");
+            DB::statement('ALTER TABLE jobs ADD CONSTRAINT jobs_vacancies_check CHECK (vacancies > 0)');
+            DB::statement('CREATE FULLTEXT INDEX jobs_fulltext_search ON jobs (title, description, requirements)');
+        }
     }
 
     public function down(): void

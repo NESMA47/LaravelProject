@@ -40,7 +40,9 @@ return new class extends Migration
             $table->index('country');
         });
 
-        DB::statement('ALTER TABLE employers ADD CONSTRAINT employers_average_rating_check CHECK (average_rating >= 0 AND average_rating <= 5)');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE employers ADD CONSTRAINT employers_average_rating_check CHECK (average_rating >= 0 AND average_rating <= 5)');
+        }
     }
 
     public function down(): void

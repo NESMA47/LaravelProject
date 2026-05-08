@@ -42,6 +42,6 @@ class FileUploadService
     public function delete(File $file): void
     {
         Storage::disk(config('filesystems.default', 'local'))->delete($file->storage_path);
-        $file->delete();
+        $file->forceDelete();
     }
 }

@@ -30,7 +30,9 @@ return new class extends Migration
             $table->index('created_at');
         });
 
-        DB::statement("ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('candidate', 'employer', 'admin'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('candidate', 'employer', 'admin'))");
+        }
     }
 
     public function down(): void

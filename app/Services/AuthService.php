@@ -86,6 +86,14 @@ class AuthService
             $user->phone = $data['phone'];
         }
 
+        if (isset($data['avatar_url'])) {
+            $user->avatar_url = $data['avatar_url'];
+        }
+
+        if (isset($data['avatar_file_id'])) {
+            $user->avatar_file_id = $data['avatar_file_id'];
+        }
+
         $user->save();
 
         return $user->fresh();

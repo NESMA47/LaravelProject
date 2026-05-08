@@ -29,7 +29,9 @@ return new class extends Migration
             $table->unique(['job_id', 'candidate_id']);
         });
 
-        DB::statement("ALTER TABLE applications ADD CONSTRAINT applications_status_check CHECK (status IN ('applied', 'reviewed', 'shortlisted', 'interviewed', 'offered', 'hired', 'rejected', 'withdrawn'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE applications ADD CONSTRAINT applications_status_check CHECK (status IN ('applied', 'reviewed', 'shortlisted', 'interviewed', 'offered', 'hired', 'rejected', 'withdrawn'))");
+        }
     }
 
     public function down(): void

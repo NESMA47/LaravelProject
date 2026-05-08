@@ -22,7 +22,9 @@ return new class extends Migration
             $table->timestampsTz();
         });
 
-        DB::statement("ALTER TABLE interviews ADD CONSTRAINT interviews_status_check CHECK (status IN ('scheduled', 'completed', 'cancelled', 'no_show'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE interviews ADD CONSTRAINT interviews_status_check CHECK (status IN ('scheduled', 'completed', 'cancelled', 'no_show'))");
+        }
     }
 
     public function down(): void
