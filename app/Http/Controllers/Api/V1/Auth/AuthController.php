@@ -102,6 +102,9 @@ class AuthController extends Controller
 
             if ($user->avatar_file_id) {
                 $oldFile = $user->avatarFile;
+                $user->avatar_url = null;
+                $user->avatar_file_id = null;
+                $user->save();
                 if ($oldFile) {
                     $this->fileService->delete($oldFile);
                 }

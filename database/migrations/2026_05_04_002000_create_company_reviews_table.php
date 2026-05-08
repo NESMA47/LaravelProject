@@ -36,12 +36,14 @@ return new class extends Migration
             $table->unique(['employer_id', 'candidate_id']);
         });
 
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_overall_check CHECK (rating_overall >= 1 AND rating_overall <= 5)');
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_work_life_balance_check CHECK (rating_work_life_balance IS NULL OR (rating_work_life_balance >= 1 AND rating_work_life_balance <= 5))');
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_salary_check CHECK (rating_salary IS NULL OR (rating_salary >= 1 AND rating_salary <= 5))');
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_culture_check CHECK (rating_culture IS NULL OR (rating_culture >= 1 AND rating_culture <= 5))');
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_management_check CHECK (rating_management IS NULL OR (rating_management >= 1 AND rating_management <= 5))');
-        DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_career_growth_check CHECK (rating_career_growth IS NULL OR (rating_career_growth >= 1 AND rating_career_growth <= 5))');
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_overall_check CHECK (rating_overall >= 1 AND rating_overall <= 5)');
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_work_life_balance_check CHECK (rating_work_life_balance IS NULL OR (rating_work_life_balance >= 1 AND rating_work_life_balance <= 5))');
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_salary_check CHECK (rating_salary IS NULL OR (rating_salary >= 1 AND rating_salary <= 5))');
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_culture_check CHECK (rating_culture IS NULL OR (rating_culture >= 1 AND rating_culture <= 5))');
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_management_check CHECK (rating_management IS NULL OR (rating_management >= 1 AND rating_management <= 5))');
+            DB::statement('ALTER TABLE company_reviews ADD CONSTRAINT reviews_rating_career_growth_check CHECK (rating_career_growth IS NULL OR (rating_career_growth >= 1 AND rating_career_growth <= 5))');
+        }
     }
 
     public function down(): void

@@ -22,9 +22,11 @@ return new class extends Migration
             $table->timestampsTz();
         });
 
-        DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_status_check CHECK (status IN ('pending', 'investigating', 'resolved', 'dismissed'))");
-        DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_reason_check CHECK (reason IN ('spam', 'fraudulent', 'misleading', 'inappropriate', 'discriminatory', 'other'))");
-        DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_target_type_check CHECK (target_type IN ('job', 'review', 'user', 'employer'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_status_check CHECK (status IN ('pending', 'investigating', 'resolved', 'dismissed'))");
+            DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_reason_check CHECK (reason IN ('spam', 'fraudulent', 'misleading', 'inappropriate', 'discriminatory', 'other'))");
+            DB::statement("ALTER TABLE reports ADD CONSTRAINT reports_target_type_check CHECK (target_type IN ('job', 'review', 'user', 'employer'))");
+        }
     }
 
     public function down(): void
