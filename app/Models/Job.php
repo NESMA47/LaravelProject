@@ -37,8 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'expires_at',
     'views_count',
     'applications_count',
-    'is_featured',
-    'featured_until',
+    'is_confirmed',
     'rejection_reason',
 ])]
 class Job extends Model
@@ -52,9 +51,8 @@ class Job extends Model
     {
         return [
             'expires_at' => 'datetime',
-            'featured_until' => 'datetime',
             'is_salary_visible' => 'boolean',
-            'is_featured' => 'boolean',
+            'is_confirmed' => 'boolean',
             'salary_min' => 'integer',
             'salary_max' => 'integer',
             'vacancies' => 'integer',

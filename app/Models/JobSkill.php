@@ -18,6 +18,8 @@ class JobSkill extends Model
 {
     use HasFactory, HasUuids;
 
+    public $timestamps = false;
+
     protected $keyType = 'string';
     public $incrementing = false;
 

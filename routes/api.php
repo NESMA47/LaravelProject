@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\Auth\VerificationController;
@@ -9,10 +10,13 @@ use App\Http\Controllers\Api\V1\Candidate\ProfileController as CandidateProfileC
 use App\Http\Controllers\Api\V1\Candidate\ResumeController as CandidateResumeController;
 use App\Http\Controllers\Api\V1\Candidate\SkillController as CandidateSkillController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\Employer\JobController as EmployerJobController;
+use App\Http\Controllers\Api\V1\Employer\ProfileController as EmployerProfileController;
 use App\Http\Controllers\Api\V1\FileController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureCandidate;
+use App\Http\Middleware\EnsureEmployer;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -66,6 +70,25 @@ Route::middleware(['auth:sanctum', EnsureCandidate::class])->prefix('candidate')
     Route::patch('resumes/{id}/default', [CandidateResumeController::class, 'setDefault']);
 });
 
+// Public employer endpoints
+Route::get('employers/{slug}', [EmployerProfileController::class, 'showBySlug']);
+Route::get('employers/{slug}/jobs', [EmployerJobController::class, 'indexByEmployer']);
+
+// Public job endpoint
+Route::get('jobs/{id}', [EmployerJobController::class, 'show']);
+
+// Employer endpoints
+Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->group(function () {
+    Route::get('profile', [EmployerProfileController::class, 'show']);
+    Route::put('profile', [EmployerProfileController::class, 'update']);
+
+    Route::get('jobs', [EmployerJobController::class, 'index']);
+    Route::post('jobs', [EmployerJobController::class, 'store']);
+    Route::patch('jobs/{id}', [EmployerJobController::class, 'update']);
+    Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']);
+    Route::delete('jobs/{id}', [EmployerJobController::class, 'destroy']);
+});
+
 // Admin-only endpoints
 Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(function () {
     Route::post('categories', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'store']);
@@ -75,4 +98,8 @@ Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(
     Route::post('skills', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'store']);
     Route::put('skills/{id}', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'update']);
     Route::delete('skills/{id}', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'destroy']);
+
+    Route::patch('jobs/{id}/confirm', [AdminJobController::class, 'confirm']);
+    Route::patch('jobs/{id}/reject', [AdminJobController::class, 'reject']);
+    Route::patch('jobs/{id}/status', [AdminJobController::class, 'updateStatus']);
 });

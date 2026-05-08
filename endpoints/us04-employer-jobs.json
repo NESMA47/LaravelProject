@@ -1,0 +1,469 @@
+{
+  "info": {
+    "name": "HireMasr API - US4 Employer Profile & Jobs",
+    "_postman_id": "hiremasr-us4-collection",
+    "description": "User Story 4 endpoints for employer profile management, job posting, and admin approval workflow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "employer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employer_slug",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "job_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Helpers",
+      "item": [
+        {
+          "name": "Register Employer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Sara\",\n  \"last_name\": \"Mohamed\",\n  \"email\": \"employer@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\",\n  \"role\": \"employer\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('employer_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Employer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employer@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('employer_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hiremasr.com\",\n  \"password\": \"AdminPass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('admin_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public - Employer",
+      "item": [
+        {
+          "name": "Get Employer Profile (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers/{{employer_slug}}",
+              "host": ["{{base_url}}"],
+              "path": ["employers", "{{employer_slug}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.slug) {",
+                  "  pm.collectionVariables.set('employer_slug', res.data.slug);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Employer Jobs (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers/{{employer_slug}}/jobs",
+              "host": ["{{base_url}}"],
+              "path": ["employers", "{{employer_slug}}", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Get Job Detail (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authenticated - Employer Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/profile",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "profile"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.slug) {",
+                  "  pm.collectionVariables.set('employer_slug', res.data.slug);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/profile",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "profile"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"Vodafone Egypt\",\n  \"industry\": \"Telecommunications\",\n  \"company_size\": \"10001+\",\n  \"founded_year\": 1998,\n  \"website\": \"https://vodafone.com.eg\",\n  \"description\": \"Leading telecom provider in Egypt...\",\n  \"headquarters\": \"Smart Village, Giza\",\n  \"city\": \"Giza\",\n  \"country\": \"EG\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authenticated - Employer Jobs",
+      "item": [
+        {
+          "name": "List My Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.data && res.data.data.length > 0) {",
+                  "  pm.collectionVariables.set('job_id', res.data.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Frontend Developer\",\n  \"category_id\": \"\",\n  \"description\": \"Join our team to build customer-facing portals...\",\n  \"requirements\": \"- 5+ years experience\\n- Vue.js expertise\",\n  \"responsibilities\": \"Lead frontend architecture decisions...\",\n  \"benefits\": \"Health insurance, remote days...\",\n  \"type\": \"full_time\",\n  \"workplace_type\": \"hybrid\",\n  \"experience_level\": \"senior\",\n  \"career_level\": \"Senior\",\n  \"education_level\": \"bachelor\",\n  \"salary_min\": 25000,\n  \"salary_max\": 40000,\n  \"is_salary_visible\": true,\n  \"location\": \"Smart Village, Giza, Egypt\",\n  \"city\": \"Giza\",\n  \"vacancies\": 2,\n  \"skills\": [\n    { \"skill_id\": \"\", \"is_required\": true, \"min_proficiency\": \"expert\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('job_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs", "{{job_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"Updated description...\",\n  \"salary_min\": 30000,\n  \"salary_max\": 50000\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update Job Status (Submit for Review)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs/{{job_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs", "{{job_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"pending_review\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update Job Status (Toggle Active ↔ Paused ↔ Closed)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs/{{job_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs", "{{job_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paused\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "jobs", "{{job_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Job Approval",
+      "item": [
+        {
+          "name": "Confirm Job (Activate)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/jobs/{{job_id}}/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "jobs", "{{job_id}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Reject Job",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/jobs/{{job_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "jobs", "{{job_id}}", "reject"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejection_reason\": \"Insufficient details provided in requirements.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Admin Update Job Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/jobs/{{job_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "jobs", "{{job_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
