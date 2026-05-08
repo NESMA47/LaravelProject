@@ -37,15 +37,14 @@ return new class extends Migration
             $table->timestampTz('expires_at')->nullable();
             $table->integer('views_count')->default(0);
             $table->integer('applications_count')->default(0);
-            $table->boolean('is_featured')->default(false);
-            $table->timestampTz('featured_until')->nullable();
+            $table->boolean('is_confirmed')->default(false);
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->text('rejection_reason')->nullable();
 
             $table->index(['employer_id', 'status']);
             $table->index(['category_id', 'status']);
-            $table->index(['status', 'is_featured', 'created_at']);
+            $table->index(['status', 'is_confirmed', 'created_at']);
             $table->index(['city', 'country', 'status']);
         });
 
