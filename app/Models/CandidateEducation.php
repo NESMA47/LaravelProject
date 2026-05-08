@@ -23,6 +23,8 @@ class CandidateEducation extends Model
 {
     use HasFactory, HasUuids;
 
+    protected $table = 'candidate_education';
+
     protected $keyType = 'string';
     public $incrementing = false;
 
