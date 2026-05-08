@@ -1,0 +1,456 @@
+{
+  "info": {
+    "name": "HireMasr API - US3 Candidate Profile",
+    "_postman_id": "hiremasr-us3-collection",
+    "description": "User Story 3 endpoints for candidate profile builder (education, experience, skills, resumes)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "candidate_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "education_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "experience_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "resume_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "skill_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Helpers",
+      "item": [
+        {
+          "name": "Register Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ahmed\",\n  \"last_name\": \"Khaled\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\",\n  \"role\": \"candidate\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/profile",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/profile",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "profile"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"headline\": \"Senior Frontend Developer | Vue.js\",\n  \"bio\": \"Passionate frontend developer with 5 years of experience...\",\n  \"location\": \"Cairo, Egypt\",\n  \"city\": \"Cairo\",\n  \"country\": \"EG\",\n  \"experience_years\": 5,\n  \"education_level\": \"bachelor\",\n  \"linkedin_url\": \"https://linkedin.com/in/ahmedkhaled\",\n  \"github_url\": \"https://github.com/ahmedkhaled\",\n  \"portfolio_url\": \"https://ahmedkhaled.dev\",\n  \"is_open_to_work\": true,\n  \"preferred_job_type\": \"full_time\",\n  \"preferred_locations\": [\"Cairo\", \"Remote\"],\n  \"expected_salary_min\": 25000,\n  \"expected_salary_max\": 40000\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Education",
+      "item": [
+        {
+          "name": "Add Education",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/education",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "education"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"degree\": \"Bachelor of Science\",\n  \"institution\": \"Cairo University\",\n  \"field_of_study\": \"Computer Science\",\n  \"start_year\": 2015,\n  \"end_year\": 2019,\n  \"grade\": \"Very Good\",\n  \"is_current\": false,\n  \"description\": \"Studied CS with focus on software engineering\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('education_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Education",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/education/{{education_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "education", "{{education_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"degree\": \"Updated Degree\",\n  \"institution\": \"Cairo University\",\n  \"field_of_study\": \"Computer Science\",\n  \"start_year\": 2015,\n  \"end_year\": 2019,\n  \"grade\": \"Excellent\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Education",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/education/{{education_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "education", "{{education_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Experience",
+      "item": [
+        {
+          "name": "Add Experience",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/experience",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "experience"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Software Engineer\",\n  \"company_name\": \"Tech Corp\",\n  \"location\": \"Cairo\",\n  \"employment_type\": \"full_time\",\n  \"start_date\": \"2020-01-15\",\n  \"end_date\": null,\n  \"is_current\": true,\n  \"description\": \"Developed web applications using Vue.js and Laravel\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('experience_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Experience",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/experience/{{experience_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "experience", "{{experience_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Developer\",\n  \"company_name\": \"New Corp\",\n  \"employment_type\": \"full_time\",\n  \"start_date\": \"2019-01-01\",\n  \"end_date\": \"2024-12-31\",\n  \"is_current\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Experience",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/experience/{{experience_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "experience", "{{experience_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skills (Batch Sync)",
+      "item": [
+        {
+          "name": "Sync Skills",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/skills",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "skills"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skills\": [\n    { \"skill_id\": \"{{skill_id}}\", \"proficiency_level\": \"expert\", \"years_experience\": 5 },\n    { \"skill_id\": \"{{skill_id}}\", \"proficiency_level\": \"advanced\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resumes",
+      "item": [
+        {
+          "name": "List Resumes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/resumes",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "resumes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.length > 0) {",
+                  "  pm.collectionVariables.set('resume_id', res.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Upload Resume",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/resumes",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "resumes"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Frontend Specialist CV", "type": "text" },
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "is_default", "value": "true", "type": "text" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('resume_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Resume Title",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/resumes/{{resume_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "resumes", "{{resume_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Resume Title\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Set Resume as Default",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/resumes/{{resume_id}}/default",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "resumes", "{{resume_id}}", "default"]
+            }
+          }
+        },
+        {
+          "name": "Delete Resume",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/resumes/{{resume_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "resumes", "{{resume_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

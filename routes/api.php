@@ -3,10 +3,16 @@
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\Auth\VerificationController;
+use App\Http\Controllers\Api\V1\Candidate\EducationController as CandidateEducationController;
+use App\Http\Controllers\Api\V1\Candidate\ExperienceController as CandidateExperienceController;
+use App\Http\Controllers\Api\V1\Candidate\ProfileController as CandidateProfileController;
+use App\Http\Controllers\Api\V1\Candidate\ResumeController as CandidateResumeController;
+use App\Http\Controllers\Api\V1\Candidate\SkillController as CandidateSkillController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\FileController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureCandidate;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -36,6 +42,28 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // All authenticated users can create skills
     Route::post('skills', [SkillController::class, 'store']);
+});
+
+// Candidate endpoints
+Route::middleware(['auth:sanctum', EnsureCandidate::class])->prefix('candidate')->group(function () {
+    Route::get('profile', [CandidateProfileController::class, 'show']);
+    Route::put('profile', [CandidateProfileController::class, 'update']);
+
+    Route::post('education', [CandidateEducationController::class, 'store']);
+    Route::put('education/{id}', [CandidateEducationController::class, 'update']);
+    Route::delete('education/{id}', [CandidateEducationController::class, 'destroy']);
+
+    Route::post('experience', [CandidateExperienceController::class, 'store']);
+    Route::put('experience/{id}', [CandidateExperienceController::class, 'update']);
+    Route::delete('experience/{id}', [CandidateExperienceController::class, 'destroy']);
+
+    Route::post('skills', [CandidateSkillController::class, 'sync']);
+
+    Route::get('resumes', [CandidateResumeController::class, 'index']);
+    Route::post('resumes', [CandidateResumeController::class, 'store']);
+    Route::put('resumes/{id}', [CandidateResumeController::class, 'update']);
+    Route::delete('resumes/{id}', [CandidateResumeController::class, 'destroy']);
+    Route::patch('resumes/{id}/default', [CandidateResumeController::class, 'setDefault']);
 });
 
 // Admin-only endpoints
