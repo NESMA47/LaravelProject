@@ -2,36 +2,36 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'employer_id',
-    'candidate_id',
-    'job_title_at_time',
-    'employment_type',
-    'is_current_employee',
-    'is_anonymous',
-    'rating_overall',
-    'rating_work_life_balance',
-    'rating_salary',
-    'rating_culture',
-    'rating_management',
-    'rating_career_growth',
-    'title',
-    'pros',
-    'cons',
-    'advice',
-    'is_approved',
-    'approved_by',
-    'approved_at',
-])]
 class CompanyReview extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'employer_id',
+        'candidate_id',
+        'job_title_at_time',
+        'employment_type',
+        'is_current_employee',
+        'is_anonymous',
+        'rating_overall',
+        'rating_work_life_balance',
+        'rating_salary',
+        'rating_culture',
+        'rating_management',
+        'rating_career_growth',
+        'title',
+        'pros',
+        'cons',
+        'advice',
+        'is_approved',
+        'approved_by',
+        'approved_at',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

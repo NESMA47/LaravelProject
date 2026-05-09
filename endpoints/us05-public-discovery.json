@@ -1,0 +1,332 @@
+{
+  "info": {
+    "name": "HireMasr API - US5 Public Job Discovery & Search",
+    "_postman_id": "hiremasr-us5-collection",
+    "description": "User Story 5 endpoints for public job discovery, employer profiles, and candidate saved jobs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "candidate_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "job_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employer_slug",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "skill_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Helpers",
+      "item": [
+        {
+          "name": "Register Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ahmed\",\n  \"last_name\": \"Ali\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\",\n  \"role\": \"candidate\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public Endpoints",
+      "item": [
+        {
+          "name": "5.1 List Jobs (default)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jobs?page=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "20" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.data && res.data.data.length > 0 && res.data.data[0].id) {",
+                  "  pm.collectionVariables.set('job_id', res.data.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "5.1 List Jobs (search + filter)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jobs?search=vue+frontend&category=software-development&type=full_time&workplace=remote&experience=senior&location=Cairo&salary_min=20000&salary_max=50000&skills[]={{skill_id}}&sort=created_at:desc&page=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "search", "value": "vue frontend" },
+                { "key": "category", "value": "software-development" },
+                { "key": "type", "value": "full_time" },
+                { "key": "workplace", "value": "remote" },
+                { "key": "experience", "value": "senior" },
+                { "key": "location", "value": "Cairo" },
+                { "key": "salary_min", "value": "20000" },
+                { "key": "salary_max", "value": "50000" },
+                { "key": "skills[]", "value": "{{skill_id}}" },
+                { "key": "sort", "value": "created_at:desc" },
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.1 List Jobs (sort by salary desc)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jobs?sort=salary_max:desc&page=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["jobs"],
+              "query": [
+                { "key": "sort", "value": "salary_max:desc" },
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Job Detail (by job_id)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            }
+          }
+        },
+        {
+          "name": "5.3 List Employers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers?page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["employers"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "15" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.4 Employer Public Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers/{{employer_slug}}",
+              "host": ["{{base_url}}"],
+              "path": ["employers", "{{employer_slug}}"]
+            }
+          }
+        },
+        {
+          "name": "5.5 Employer Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers/{{employer_slug}}/reviews?page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["employers", "{{employer_slug}}", "reviews"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "15" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.5b Employer Jobs (Public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employers/{{employer_slug}}/jobs?page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["employers", "{{employer_slug}}", "jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "15" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Candidate Endpoints (Auth)",
+      "item": [
+        {
+          "name": "5.6 List My Saved Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/saved-jobs",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "saved-jobs"]
+            }
+          }
+        },
+        {
+          "name": "5.7 Save a Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/saved-jobs",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "saved-jobs"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"notes\": \"Apply before Friday\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "5.8 Unsave a Job",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/saved-jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "saved-jobs", "{{job_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

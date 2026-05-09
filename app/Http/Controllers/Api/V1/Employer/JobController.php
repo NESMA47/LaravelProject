@@ -48,34 +48,6 @@ class JobController extends Controller
         ]);
     }
 
-    // Public: list jobs by employer slug
-    public function indexByEmployer(string $slug, Request $request): JsonResponse
-    {
-        $employer = Employer::where('slug', $slug)->firstOrFail();
-        $jobs = Job::with(['category', 'jobSkills.skill'])
-            ->where('employer_id', $employer->id)
-            ->whereIn('status', ['active', 'paused'])
-            ->where('is_confirmed', true)
-            ->orderBy('created_at', 'desc')
-            ->paginate($request->input('per_page', 15));
-
-        return response()->json([
-            'success' => true,
-            'data' => JobResource::collection($jobs),
-        ]);
-    }
-
-    // Public: show job by id
-    public function show(string $id): JsonResponse
-    {
-        $job = Job::with(['employer', 'category', 'jobSkills.skill'])->findOrFail($id);
-
-        return response()->json([
-            'success' => true,
-            'data' => new JobResource($job),
-        ]);
-    }
-
     public function store(CreateJobRequest $request): JsonResponse
     {
         $employer = $this->getEmployer();
@@ -86,7 +58,7 @@ class JobController extends Controller
         $job = DB::transaction(function () use ($employer, $data, $slug) {
             $job = Job::create([
                 'employer_id' => $employer->id,
-                'category_id' => $data['category_id'],
+                'category_id' => $data['category_id'] ?? null,
                 'posted_by_user_id' => Auth::id(),
                 'title' => $data['title'],
                 'slug' => $slug,

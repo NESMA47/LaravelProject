@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'candidate_id',
-    'skill_id',
-    'proficiency_level',
-    'years_experience',
-])]
 class CandidateSkill extends Model
 {
     use HasFactory, HasUuids;
+    protected $fillable = [
+        'candidate_id',
+        'skill_id',
+        'proficiency_level',
+        'years_experience',
+    ];
 
     protected $table = 'candidate_skills';
 

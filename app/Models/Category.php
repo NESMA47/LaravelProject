@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable([
-    'name',
-    'slug',
-    'icon',
-    'description',
-    'display_order',
-    'is_active',
-    'jobs_count',
-])]
 class Category extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'icon',
+        'description',
+        'display_order',
+        'is_active',
+        'jobs_count',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

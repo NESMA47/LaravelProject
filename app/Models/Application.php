@@ -2,30 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable([
-    'job_id',
-    'candidate_id',
-    'cover_letter',
-    'job_snapshot',
-    'employer_snapshot',
-    'candidate_snapshot',
-    'status',
-    'current_stage',
-    'withdrawn_at',
-    'withdrawn_reason',
-    'applied_at',
-])]
 class Application extends Model
 {
     use HasFactory, HasUuids;
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'job_id',
+        'original_job_id',
+        'candidate_id',
+        'cover_letter',
+        'job_snapshot',
+        'employer_snapshot',
+        'candidate_snapshot',
+        'current_status',
+        'current_stage',
+        'withdrawn_at',
+        'withdrawn_reason',
+        'job_removed_at',
+        'resume_url',
+        'applied_at',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;
@@ -37,6 +41,7 @@ class Application extends Model
             'employer_snapshot' => 'array',
             'candidate_snapshot' => 'array',
             'withdrawn_at' => 'datetime',
+            'job_removed_at' => 'datetime',
             'applied_at' => 'datetime',
         ];
     }
@@ -53,11 +58,11 @@ class Application extends Model
 
     public function stages(): HasMany
     {
-        return $this->hasMany(ApplicationStage::class);
+        return $this->hasMany(ApplicationStage::class)->orderBy('created_at');
     }
 
-    public function interview(): HasOne
+    public function interviews(): HasMany
     {
-        return $this->hasOne(Interview::class);
+        return $this->hasMany(Interview::class);
     }
 }

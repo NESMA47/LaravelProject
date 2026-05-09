@@ -625,7 +625,9 @@ class EmployerJobTest extends TestCase
                 'location' => 'Cairo',
             ]);
 
+        $response1->assertCreated();
         $slug1 = $response1->json('data.slug');
+        $this->assertNotNull($slug1);
 
         $response2 = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/v1/employer/jobs', [
@@ -638,7 +640,9 @@ class EmployerJobTest extends TestCase
                 'location' => 'Cairo',
             ]);
 
+        $response2->assertCreated();
         $slug2 = $response2->json('data.slug');
+        $this->assertNotNull($slug2);
 
         $this->assertNotEquals($slug1, $slug2);
     }
