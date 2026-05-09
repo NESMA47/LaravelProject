@@ -66,6 +66,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tokenable ID Type
+    |--------------------------------------------------------------------------
+    |
+    | Since the application uses UUID primary keys for the users table,
+    | Sanctum must store tokenable_id as a UUID string instead of an
+    | auto-incrementing integer.
+    |
+    | Supported: "int", "uuid"
+    */
+
+    'tokenable_id_type' => 'uuid',
+
+    /*
+    |--------------------------------------------------------------------------
     | Sanctum Middleware
     |--------------------------------------------------------------------------
     |
