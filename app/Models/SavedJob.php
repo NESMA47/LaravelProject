@@ -18,6 +18,8 @@ class SavedJob extends Model
         'saved_at',
     ];
 
+    public $timestamps = false;
+
     protected $keyType = 'string';
     public $incrementing = false;
 

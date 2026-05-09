@@ -8,11 +8,14 @@ use App\Http\Controllers\Api\V1\Candidate\EducationController as CandidateEducat
 use App\Http\Controllers\Api\V1\Candidate\ExperienceController as CandidateExperienceController;
 use App\Http\Controllers\Api\V1\Candidate\ProfileController as CandidateProfileController;
 use App\Http\Controllers\Api\V1\Candidate\ResumeController as CandidateResumeController;
+use App\Http\Controllers\Api\V1\Candidate\SavedJobController;
 use App\Http\Controllers\Api\V1\Candidate\SkillController as CandidateSkillController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\EmployerController;
 use App\Http\Controllers\Api\V1\Employer\JobController as EmployerJobController;
 use App\Http\Controllers\Api\V1\Employer\ProfileController as EmployerProfileController;
 use App\Http\Controllers\Api\V1\FileController;
+use App\Http\Controllers\Api\V1\JobController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureCandidate;
@@ -68,14 +71,22 @@ Route::middleware(['auth:sanctum', EnsureCandidate::class])->prefix('candidate')
     Route::put('resumes/{id}', [CandidateResumeController::class, 'update']);
     Route::delete('resumes/{id}', [CandidateResumeController::class, 'destroy']);
     Route::patch('resumes/{id}/default', [CandidateResumeController::class, 'setDefault']);
+
+    // Saved jobs
+    Route::get('saved-jobs', [SavedJobController::class, 'index']);
+    Route::post('saved-jobs', [SavedJobController::class, 'store']);
+    Route::delete('saved-jobs/{job_id}', [SavedJobController::class, 'destroy']);
 });
 
-// Public employer endpoints
-Route::get('employers/{slug}', [EmployerProfileController::class, 'showBySlug']);
-Route::get('employers/{slug}/jobs', [EmployerJobController::class, 'indexByEmployer']);
+// Public job discovery endpoints
+Route::get('jobs', [JobController::class, 'index']);
+Route::get('jobs/{id}', [JobController::class, 'show']);
 
-// Public job endpoint
-Route::get('jobs/{id}', [EmployerJobController::class, 'show']);
+// Public employer endpoints
+Route::get('employers', [EmployerController::class, 'index']);
+Route::get('employers/{slug}', [EmployerController::class, 'show']);
+Route::get('employers/{slug}/reviews', [EmployerController::class, 'reviews']);
+Route::get('employers/{slug}/jobs', [EmployerController::class, 'jobs']);
 
 // Employer endpoints
 // Employer endpoints
@@ -86,11 +97,9 @@ Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->
     // --- تعديل قسم الوظائف هنا ---
     Route::get('jobs', [EmployerJobController::class, 'index']);          // عرض كل وظائف صاحب العمل
     Route::post('jobs', [EmployerJobController::class, 'store']);         // إنشاء وظيفة جديدة
-    
-    Route::get('jobs/{id}', [EmployerJobController::class, 'show']);      
-    
-    Route::put('jobs/{id}', [EmployerJobController::class, 'update']);    
-    
+
+    Route::put('jobs/{id}', [EmployerJobController::class, 'update']);
+
     Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']); // تغيير الحالة فقط
     Route::delete('jobs/{id}', [EmployerJobController::class, 'destroy']);
 });
