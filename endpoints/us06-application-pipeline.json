@@ -1,0 +1,610 @@
+{
+  "info": {
+    "name": "HireMasr API - US6 Application Pipeline & Interviews",
+    "_postman_id": "hiremasr-us6-collection",
+    "description": "User Story 6 endpoints for candidate applications, employer pipeline management, and interview scheduling",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "candidate_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "application_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "interview_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "job_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Helpers",
+      "item": [
+        {
+          "name": "Register Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ahmed\",\n  \"last_name\": \"Ali\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\",\n  \"role\": \"candidate\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('candidate_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Employer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Sara\",\n  \"last_name\": \"Mohamed\",\n  \"email\": \"employer@company.com\",\n  \"password\": \"SecurePass123!\",\n  \"password_confirmation\": \"SecurePass123!\",\n  \"role\": \"employer\",\n  \"company_name\": \"TechCorp\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('employer_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Employer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employer@company.com\",\n  \"password\": \"SecurePass123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.access_token) {",
+                  "  pm.collectionVariables.set('employer_token', res.data.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "C-1: Candidate List Applications",
+      "item": [
+        {
+          "name": "List My Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/applications",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "applications"]
+            }
+          }
+        },
+        {
+          "name": "List Applications (Filtered by Status)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/applications?status=applied",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "applications"],
+              "query": [
+                { "key": "status", "value": "applied" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "C-2: Candidate Application Detail",
+      "item": [
+        {
+          "name": "Get Application Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/applications/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "applications", "{{application_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "C-3: Candidate Apply to Job",
+      "item": [
+        {
+          "name": "Apply to Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/applications",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "applications"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"cover_letter\": \"I am very interested in this position and believe my skills are a great fit.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('application_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "C-4: Candidate Withdraw Application",
+      "item": [
+        {
+          "name": "Withdraw Application",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidate_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/candidate/applications/{{application_id}}/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["candidate", "applications", "{{application_id}}", "withdraw"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Accepted another offer\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-1: Employer Global Inbox",
+      "item": [
+        {
+          "name": "List All Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications"]
+            }
+          }
+        },
+        {
+          "name": "List Applications Filtered by Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications?job_id={{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications"],
+              "query": [
+                { "key": "job_id", "value": "{{job_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Applications Filtered by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications?status=shortlisted",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications"],
+              "query": [
+                { "key": "status", "value": "shortlisted" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-2: Employer Per-Job Pipeline",
+      "item": [
+        {
+          "name": "Get Job Pipeline Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "jobs", "{{job_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-3: Employer Application Detail",
+      "item": [
+        {
+          "name": "Get Employer Application Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-4: Employer Update Application Status",
+      "item": [
+        {
+          "name": "Move to Shortlisted",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shortlisted\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Move to Interviewed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"interviewed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Reject Application",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\",\n  \"notes\": \"Not a good fit for the role.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-5: Employer Schedule Interview",
+      "item": [
+        {
+          "name": "Schedule Interview",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/interviews",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "interviews"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduled_at\": \"2026-06-01T10:00:00Z\",\n  \"duration_minutes\": 60,\n  \"location_type\": \"video_call\",\n  \"notes\": \"Initial technical screening\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.interview && res.data.interview.id) {",
+                  "  pm.collectionVariables.set('interview_id', res.data.interview.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "E-6: Employer Reschedule Interview",
+      "item": [
+        {
+          "name": "Reschedule Interview",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/interviews/{{interview_id}}/reschedule",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "interviews", "{{interview_id}}", "reschedule"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduled_at\": \"2026-06-02T14:00:00Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-7: Employer Cancel Interview",
+      "item": [
+        {
+          "name": "Cancel Interview",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/interviews/{{interview_id}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "interviews", "{{interview_id}}", "cancel"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellation_note\": \"Position has been filled internally\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "E-8: Employer Set Interview Outcome",
+      "item": [
+        {
+          "name": "Mark Interview Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/interviews/{{interview_id}}/outcome",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "interviews", "{{interview_id}}", "outcome"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\",\n  \"notes\": \"Candidate performed well, move to offer stage\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Mark Interview No-Show",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employer_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/employer/applications/{{application_id}}/interviews/{{interview_id}}/outcome",
+              "host": ["{{base_url}}"],
+              "path": ["employer", "applications", "{{application_id}}", "interviews", "{{interview_id}}", "outcome"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"no_show\",\n  \"notes\": \"Candidate did not attend\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
