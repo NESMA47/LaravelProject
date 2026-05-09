@@ -9,30 +9,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable([
-    'user_id',
-    'headline',
-    'bio',
-    'location',
-    'city',
-    'country',
-    'experience_years',
-    'education_level',
-    'linkedin_url',
-    'github_url',
-    'portfolio_url',
-    'website_url',
-    'is_open_to_work',
-    'preferred_job_type',
-    'preferred_locations',
-    'expected_salary_min',
-    'expected_salary_max',
-    'currency',
-    'profile_completion_score',
-])]
 class Candidate extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [    
+        'user_id',
+        'headline',
+        'bio',
+        'location',
+        'city',
+        'country',
+        'experience_years',
+        'education_level',
+        'linkedin_url',
+        'github_url',
+        'portfolio_url',
+        'website_url',
+        'is_open_to_work',
+        'preferred_job_type',
+        'preferred_locations',
+        'expected_salary_min',
+        'expected_salary_max',
+        'currency',
+        'profile_completion_score',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'application_id',
-    'scheduled_at',
-    'duration_minutes',
-    'location_type',
-    'location_details',
-    'notes',
-    'status',
-    'created_by_user_id',
-])]
 class Interview extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'application_id',
+        'scheduled_at',
+        'duration_minutes',
+        'location_type',
+        'location_details',
+        'notes',
+        'status',
+        'created_by_user_id',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

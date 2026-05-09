@@ -8,15 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'application_id',
-    'stage',
-    'notes',
-    'changed_by_user_id',
-])]
 class ApplicationStage extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'application_id',
+        'stage',
+        'notes',
+        'changed_by_user_id',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

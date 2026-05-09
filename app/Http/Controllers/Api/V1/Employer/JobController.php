@@ -86,7 +86,7 @@ class JobController extends Controller
         $job = DB::transaction(function () use ($employer, $data, $slug) {
             $job = Job::create([
                 'employer_id' => $employer->id,
-                'category_id' => $data['category_id'],
+                'category_id' => $data['category_id'] ?? null,
                 'posted_by_user_id' => Auth::id(),
                 'title' => $data['title'],
                 'slug' => $slug,

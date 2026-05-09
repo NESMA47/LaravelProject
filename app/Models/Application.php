@@ -10,22 +10,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable([
-    'job_id',
-    'candidate_id',
-    'cover_letter',
-    'job_snapshot',
-    'employer_snapshot',
-    'candidate_snapshot',
-    'status',
-    'current_stage',
-    'withdrawn_at',
-    'withdrawn_reason',
-    'applied_at',
-])]
 class Application extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'job_id',
+        'candidate_id',
+        'cover_letter',
+        'job_snapshot',
+        'employer_snapshot',
+        'candidate_snapshot',
+        'status',
+        'current_stage',
+        'withdrawn_at',
+        'withdrawn_reason',
+        'applied_at',        
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;

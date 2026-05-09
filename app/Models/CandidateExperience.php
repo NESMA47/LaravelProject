@@ -8,20 +8,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'candidate_id',
-    'title',
-    'company_name',
-    'location',
-    'employment_type',
-    'start_date',
-    'end_date',
-    'is_current',
-    'description',
-])]
 class CandidateExperience extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'candidate_id',
+        'title',
+        'company_name',
+        'location',
+        'employment_type',
+        'start_date',
+        'end_date',
+        'is_current',
+        'description',
+    ];
 
     protected $table = 'candidate_experience';
 

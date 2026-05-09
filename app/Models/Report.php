@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable([
-    'reporter_id',
-    'target_type',
-    'target_id',
-    'reason',
-    'details',
-    'status',
-    'resolved_by_user_id',
-    'resolution_notes',
-])]
 class Report extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'reporter_id',
+        'target_type',
+        'target_id',
+        'reason',
+        'details',
+        'status',
+        'resolved_by_user_id',
+        'resolution_notes',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;
