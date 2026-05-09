@@ -83,20 +83,20 @@ Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->
     Route::get('profile', [EmployerProfileController::class, 'show']);
     Route::put('profile', [EmployerProfileController::class, 'update']);
 
-    // --- تعديل قسم الوظائف هنا ---
-    Route::get('jobs', [EmployerJobController::class, 'index']);          // عرض كل وظائف صاحب العمل
-    Route::post('jobs', [EmployerJobController::class, 'store']);         // إنشاء وظيفة جديدة
+    Route::get('jobs', [EmployerJobController::class, 'index']);         
+    Route::post('jobs', [EmployerJobController::class, 'store']);        
     
     Route::get('jobs/{id}', [EmployerJobController::class, 'show']);      
     
     Route::put('jobs/{id}', [EmployerJobController::class, 'update']);    
     
-    Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']); // تغيير الحالة فقط
+    Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']); 
     Route::delete('jobs/{id}', [EmployerJobController::class, 'destroy']);
 });
 
 // Admin-only endpoints
 Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(function () {
+    Route::get('jobs', [AdminJobController::class, 'index']);    
     Route::post('categories', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'store']);
     Route::put('categories/{id}', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'update']);
     Route::delete('categories/{id}', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'destroy']);

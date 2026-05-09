@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
+
+    public function index(): JsonResponse
+    {
+        $jobs = Job::with('employer')->latest()->get();
+    
+         return response()->json([
+        'success' => true,
+        'data' => $jobs
+    ]);
+    }
     public function confirm(string $id): JsonResponse
     {
         $job = Job::findOrFail($id);

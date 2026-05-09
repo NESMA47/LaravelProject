@@ -46,22 +46,30 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function destroy(string $id): JsonResponse
-    {
-        $category = Category::findOrFail($id);
+   public function destroy(string $id): JsonResponse
+{
+    // Find the category or throw 404
+    $category = Category::findOrFail($id);
 
-        if ($category->jobs_count > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot delete category with existing jobs.',
-            ], 409);
-        }
-
-        $category->delete();
-
+    if ($category->skills()->exists()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Category deleted successfully.',
-        ]);
+            'success' => false,
+            'message' => 'Action Denied: This category contains active skills. Please delete or reassign skills first.',
+        ], 422);
     }
+
+    if ($category->jobs()->exists()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Action Denied: This category is linked to existing job postings.',
+        ], 422);
+    }
+
+    $category->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Category deleted successfully.',
+    ]);
+}
 }
