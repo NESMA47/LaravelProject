@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,23 +12,27 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable([
-    'email',
-    'password_hash',
-    'first_name',
-    'last_name',
-    'avatar_url',
-    'avatar_file_id',
-    'phone',
-    'role',
-    'is_active',
-    'email_verified_at',
-    'last_login_at',
-])]
-#[Hidden(['password_hash'])]
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasUuids, Notifiable, SoftDeletes;
+
+    protected $fillable = [
+        'email',
+        'password_hash',
+        'first_name',
+        'last_name',
+        'avatar_url',
+        'avatar_file_id',
+        'phone',
+        'role',
+        'is_active',
+        'email_verified_at',
+        'last_login_at',
+    ];
+
+    protected $hidden = [
+        'password_hash',
+    ];
 
     protected $keyType = 'string';
     public $incrementing = false;
