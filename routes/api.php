@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\JobController as AdminJobController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\Auth\VerificationController;
+use App\Http\Controllers\Api\V1\Candidate\ApplicationController as CandidateApplicationController;
 use App\Http\Controllers\Api\V1\Candidate\EducationController as CandidateEducationController;
 use App\Http\Controllers\Api\V1\Candidate\ExperienceController as CandidateExperienceController;
 use App\Http\Controllers\Api\V1\Candidate\ProfileController as CandidateProfileController;
@@ -12,6 +13,8 @@ use App\Http\Controllers\Api\V1\Candidate\SavedJobController;
 use App\Http\Controllers\Api\V1\Candidate\SkillController as CandidateSkillController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\EmployerController;
+use App\Http\Controllers\Api\V1\Employer\ApplicationController as EmployerApplicationController;
+use App\Http\Controllers\Api\V1\Employer\InterviewController as EmployerInterviewController;
 use App\Http\Controllers\Api\V1\Employer\JobController as EmployerJobController;
 use App\Http\Controllers\Api\V1\Employer\ProfileController as EmployerProfileController;
 use App\Http\Controllers\Api\V1\FileController;
@@ -76,6 +79,12 @@ Route::middleware(['auth:sanctum', EnsureCandidate::class])->prefix('candidate')
     Route::get('saved-jobs', [SavedJobController::class, 'index']);
     Route::post('saved-jobs', [SavedJobController::class, 'store']);
     Route::delete('saved-jobs/{job_id}', [SavedJobController::class, 'destroy']);
+
+    // Applications (US6)
+    Route::get('applications', [CandidateApplicationController::class, 'index']);
+    Route::get('applications/{id}', [CandidateApplicationController::class, 'show']);
+    Route::post('applications', [CandidateApplicationController::class, 'store']);
+    Route::patch('applications/{id}/withdraw', [CandidateApplicationController::class, 'withdraw']);
 });
 
 // Public job discovery endpoints
@@ -102,6 +111,18 @@ Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->
 
     Route::patch('jobs/{id}/status', [EmployerJobController::class, 'updateStatus']); // تغيير الحالة فقط
     Route::delete('jobs/{id}', [EmployerJobController::class, 'destroy']);
+
+    // Applications (US6)
+    Route::get('applications', [EmployerApplicationController::class, 'index']);
+    Route::get('jobs/{job_id}/applications', [EmployerApplicationController::class, 'jobApplications']);
+    Route::get('applications/{id}', [EmployerApplicationController::class, 'show']);
+    Route::patch('applications/{id}/status', [EmployerApplicationController::class, 'updateStatus']);
+
+    // Interviews (US6)
+    Route::post('applications/{id}/interviews', [EmployerInterviewController::class, 'store']);
+    Route::patch('applications/{id}/interviews/{interview_id}/reschedule', [EmployerInterviewController::class, 'reschedule']);
+    Route::patch('applications/{id}/interviews/{interview_id}/cancel', [EmployerInterviewController::class, 'cancel']);
+    Route::patch('applications/{id}/interviews/{interview_id}/outcome', [EmployerInterviewController::class, 'outcome']);
 });
 
 // Admin-only endpoints

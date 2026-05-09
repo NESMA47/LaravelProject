@@ -3,42 +3,55 @@
 namespace App\Observers;
 
 use App\Models\Job;
+use App\Services\ApplicationStageService;
+use Illuminate\Support\Facades\DB;
 
 class JobObserver
 {
-    public function created(Job $job): void
-    {
-        if ($job->category_id) {
-            $job->category()->increment('jobs_count');
-        }
-    }
-
     public function deleted(Job $job): void
     {
-        if ($job->category_id) {
-            $job->category()->decrement('jobs_count');
+        if (! $job->isForceDeleting()) {
+            $this->handleSoftDelete($job);
         }
     }
 
-    public function restored(Job $job): void
+    private function handleSoftDelete(Job $job): void
     {
-        if ($job->category_id) {
-            $job->category()->increment('jobs_count');
-        }
-    }
+        $applications = $job->applications()
+            ->whereNotIn('current_status', ['hired', 'rejected', 'withdrawn'])
+            ->get();
 
-    public function updated(Job $job): void
-    {
-        $originalCategoryId = $job->getOriginal('category_id');
-        $newCategoryId = $job->category_id;
+        foreach ($applications as $application) {
+            DB::transaction(function () use ($application) {
+                $application->update([
+                    'job_removed_at' => now(),
+                    'current_status' => 'job_removed',
+                ]);
 
-        if ($originalCategoryId !== $newCategoryId) {
-            if ($originalCategoryId) {
-                \App\Models\Category::where('id', $originalCategoryId)->decrement('jobs_count');
-            }
-            if ($newCategoryId) {
-                \App\Models\Category::where('id', $newCategoryId)->increment('jobs_count');
-            }
+                ApplicationStageService::insertStage(
+                    $application,
+                    'job_removed',
+                    'This job listing was removed by the employer.',
+                    null,
+                    true
+                );
+
+                // Cancel and soft-delete all scheduled interviews
+                $application->interviews()
+                    ->where('status', 'scheduled')
+                    ->whereNull('deleted_at')
+                    ->update([
+                        'status' => 'cancelled',
+                        'cancellation_reason' => 'job_removed',
+                        'cancellation_note' => 'This interview was cancelled because the employer removed the job listing.',
+                    ]);
+
+                $application->interviews()
+                    ->where('status', 'cancelled')
+                    ->whereNull('deleted_at')
+                    ->get()
+                    ->each->delete();
+            });
         }
     }
 }
