@@ -21,6 +21,10 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureCandidate;
 use App\Http\Middleware\EnsureEmployer;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Admin\AdminDashboardController;
+use App\Http\Controllers\Api\V1\Admin\AdminReviewController;
+use App\Http\Controllers\Api\V1\Admin\AdminReportController;
+use App\Http\Controllers\Api\V1\NotificationController;
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -117,4 +121,57 @@ Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(
     Route::patch('jobs/{id}/confirm', [AdminJobController::class, 'confirm']);
     Route::patch('jobs/{id}/reject', [AdminJobController::class, 'reject']);
     Route::patch('jobs/{id}/status', [AdminJobController::class, 'updateStatus']);
+
+// ── US8 Admin Extra Routes ──────────────────────────────────────────
+Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(function () {
+    Route::get('dashboard',              [AdminDashboardController::class, 'dashboard']);
+    Route::get('users',                  [AdminDashboardController::class, 'listUsers']);
+    Route::get('users/{id}',             [AdminDashboardController::class, 'showUser']);
+    Route::patch('users/{id}/status',    [AdminDashboardController::class, 'updateUserStatus']);
+    Route::get('jobs',                   [AdminDashboardController::class, 'listJobs']);
+    Route::get('jobs/{id}',              [AdminDashboardController::class, 'showJob']);
+    Route::delete('jobs/{id}',           [AdminDashboardController::class, 'deleteJob']);
+    Route::get('reviews',                [AdminReviewController::class, 'index']);
+    Route::patch('reviews/{id}/approve', [AdminReviewController::class, 'approve']);
+    Route::patch('reviews/{id}/reject',  [AdminReviewController::class, 'reject']);
+    Route::get('categories',             [\App\Http\Controllers\Api\V1\CategoryController::class, 'index']);
+    Route::get('skills',                 [\App\Http\Controllers\Api\V1\SkillController::class, 'index']);
+    Route::get('reports',                [AdminReportController::class, 'index']);
+    Route::patch('reports/{id}',         [AdminReportController::class, 'update']);
+});
+
+// ── US8 Notification Routes ─────────────────────────────────────────
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('notifications',                [NotificationController::class, 'index']);
+    Route::get('notifications/unread-count',   [NotificationController::class, 'unreadCount']);
+    Route::patch('notifications/read-all',     [NotificationController::class, 'markAllRead']);
+    Route::patch('notifications/{id}/read',    [NotificationController::class, 'markRead']);
+});
+
+});
+
+// ── US8 Notification Routes ─────────────────────────────────────────
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('notifications',                [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);
+    Route::get('notifications/unread-count',   [\App\Http\Controllers\Api\V1\NotificationController::class, 'unreadCount']);
+    Route::patch('notifications/read-all',     [\App\Http\Controllers\Api\V1\NotificationController::class, 'markAllRead']);
+    Route::patch('notifications/{id}/read',    [\App\Http\Controllers\Api\V1\NotificationController::class, 'markRead']);
+});
+
+// ── US8 Admin Extra Routes ──────────────────────────────────────────
+Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsureAdmin::class])->prefix('admin')->group(function () {
+    Route::get('dashboard',              [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'dashboard']);
+    Route::get('users',                  [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'listUsers']);
+    Route::get('users/{id}',             [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'showUser']);
+    Route::patch('users/{id}/status',    [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'updateUserStatus']);
+    Route::get('jobs',                   [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'listJobs']);
+    Route::get('jobs/{id}',              [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'showJob']);
+    Route::delete('jobs/{id}',           [\App\Http\Controllers\Api\V1\Admin\AdminDashboardController::class, 'deleteJob']);
+    Route::get('reviews',                [\App\Http\Controllers\Api\V1\Admin\AdminReviewController::class, 'index']);
+    Route::patch('reviews/{id}/approve', [\App\Http\Controllers\Api\V1\Admin\AdminReviewController::class, 'approve']);
+    Route::patch('reviews/{id}/reject',  [\App\Http\Controllers\Api\V1\Admin\AdminReviewController::class, 'reject']);
+    Route::get('categories',             [\App\Http\Controllers\Api\V1\CategoryController::class, 'index']);
+    Route::get('skills',                 [\App\Http\Controllers\Api\V1\SkillController::class, 'index']);
+    Route::get('reports',                [\App\Http\Controllers\Api\V1\Admin\AdminReportController::class, 'index']);
+    Route::patch('reports/{id}',         [\App\Http\Controllers\Api\V1\Admin\AdminReportController::class, 'update']);
 });
