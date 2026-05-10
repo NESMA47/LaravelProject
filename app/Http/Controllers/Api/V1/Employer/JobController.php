@@ -96,46 +96,45 @@ class JobController extends Controller
         ], 201);
     }
 
-    public function update(UpdateJobRequest $request, string $id): JsonResponse
+    public function update(UpdateJobRequest $request, $id)
+{
+    $job = Job::where('employer_id', auth()->user()->employer->id)->findOrFail($id);
+
+    $job->update($request->validated());
+
+    if ($request->has('skills')) {
+        $skillsData = [];
+        foreach ($request->skills as $skill) {
+            $skillsData[$skill['skill_id']] = [
+                'is_required' => $skill['is_required'] ?? true,
+                'id' => \Illuminate\Support\Str::uuid()->toString(), // لو بتستخدم UUID في الـ Pivot table
+            ];
+        }
+        $job->skills()->sync($skillsData);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Job updated successfully',
+        'data' => $job->load('skills')
+    ]);
+}
+    // اضف هذه الميثود لجلب بيانات وظيفة واحدة من أجل التعديل
+    public function show(string $id): JsonResponse
     {
-        $job = Job::findOrFail($id);
-
-        if (! $this->belongsToEmployer($job)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Forbidden.',
-            ], 403);
-        }
-
-        // Forbidden statuses for editing
-        if (in_array($job->status, ['closed', 'rejected', 'expired'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot edit job with status ' . $job->status . '.',
-            ], 409);
-        }
-
-        // Active jobs: restrict editable fields
-        $data = $request->validated();
-        if ($job->status === 'active') {
-            $allowed = ['description', 'requirements', 'responsibilities', 'benefits', 'salary_min', 'salary_max', 'is_salary_visible', 'vacancies', 'expires_at', 'skills'];
-            $data = array_intersect_key($data, array_flip($allowed));
-        }
-
-        DB::transaction(function () use ($job, $data) {
-            $job->update($data);
-
-            if (isset($data['skills'])) {
-                JobService::syncSkills($job, $data['skills']);
-            }
-        });
+        $employer = $this->getEmployer();
+        
+        // جلب الوظيفة مع المهارات والتصنيف للتأكد من ملكيتها لصاحب العمل
+        $job = Job::with(['category', 'jobSkills.skill'])
+            ->where('employer_id', $employer->id)
+            ->findOrFail($id);
 
         return response()->json([
             'success' => true,
-            'data' => new JobResource($job->fresh()->load(['category', 'jobSkills.skill'])),
+            'data' => new JobResource($job),
         ]);
     }
-
+    
     public function updateStatus(UpdateJobStatusRequest $request, string $id): JsonResponse
     {
         $job = Job::findOrFail($id);

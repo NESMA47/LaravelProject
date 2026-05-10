@@ -102,7 +102,7 @@ Route::get('employers/{slug}/jobs', [EmployerController::class, 'jobs']);
 Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->group(function () {
     Route::get('profile', [EmployerProfileController::class, 'show']);
     Route::put('profile', [EmployerProfileController::class, 'update']);
-
+    Route::get('jobs/{id}', [EmployerJobController::class, 'show']);
     // --- تعديل قسم الوظائف هنا ---
     Route::get('jobs', [EmployerJobController::class, 'index']);          // عرض كل وظائف صاحب العمل
     Route::post('jobs', [EmployerJobController::class, 'store']);         // إنشاء وظيفة جديدة

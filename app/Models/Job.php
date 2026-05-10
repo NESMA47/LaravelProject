@@ -85,4 +85,10 @@ class Job extends Model
     {
         return $this->hasMany(Application::class);
     }
+
+    public function skills(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+{
+    return $this->belongsToMany(Skill::class, 'job_skills', 'job_id', 'skill_id')
+                ->withPivot('id', 'is_required') ;
+}
 }

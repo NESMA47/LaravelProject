@@ -86,4 +86,5 @@ class JobController extends Controller
             'data' => new JobResource($job->fresh()->load(['employer', 'category', 'jobSkills.skill'])),
         ]);
     }
+    
 }
