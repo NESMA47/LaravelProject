@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\V1\Admin\JobController as AdminJobController;
+use App\Http\Controllers\Api\V1\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\Api\V1\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\Auth\VerificationController;
@@ -19,6 +23,7 @@ use App\Http\Controllers\Api\V1\Employer\JobController as EmployerJobController;
 use App\Http\Controllers\Api\V1\Employer\ProfileController as EmployerProfileController;
 use App\Http\Controllers\Api\V1\FileController;
 use App\Http\Controllers\Api\V1\JobController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureCandidate;
@@ -128,15 +133,49 @@ Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->
 
 // Admin-only endpoints
 Route::middleware(['auth:sanctum', EnsureAdmin::class])->prefix('admin')->group(function () {
+    // Dashboard (8.1)
+    Route::get('dashboard', [AdminDashboardController::class, 'index']);
+
+    // Users (8.2 - 8.4)
+    Route::get('users', [AdminUserController::class, 'index']);
+    Route::get('users/{id}', [AdminUserController::class, 'show']);
+    Route::patch('users/{id}/status', [AdminUserController::class, 'updateStatus']);
+
+    // Jobs (8.5 - 8.9)
+    Route::get('jobs', [AdminJobController::class, 'index']);
+    Route::get('jobs/{id}', [AdminJobController::class, 'show']);
+    Route::post('jobs', [AdminJobController::class, 'store']);
+    Route::patch('jobs/{id}/confirm', [AdminJobController::class, 'confirm']);
+    Route::patch('jobs/{id}/reject', [AdminJobController::class, 'reject']);
+    Route::patch('jobs/{id}/status', [AdminJobController::class, 'updateStatus']);
+    Route::delete('jobs/{id}', [AdminJobController::class, 'destroy']);
+
+    // Categories (8.13 - 8.15)
+    Route::get('categories', [CategoryController::class, 'index']);
     Route::post('categories', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'store']);
     Route::put('categories/{id}', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'update']);
     Route::delete('categories/{id}', [\App\Http\Controllers\Api\V1\Admin\CategoryController::class, 'destroy']);
 
+    // Skills (8.16 - 8.18)
+    Route::get('skills', [SkillController::class, 'index']);
     Route::post('skills', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'store']);
     Route::put('skills/{id}', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'update']);
     Route::delete('skills/{id}', [\App\Http\Controllers\Api\V1\Admin\SkillController::class, 'destroy']);
 
-    Route::patch('jobs/{id}/confirm', [AdminJobController::class, 'confirm']);
-    Route::patch('jobs/{id}/reject', [AdminJobController::class, 'reject']);
-    Route::patch('jobs/{id}/status', [AdminJobController::class, 'updateStatus']);
+    // Reviews (8.10 - 8.12)
+    Route::get('reviews', [AdminReviewController::class, 'index']);
+    Route::patch('reviews/{id}/approve', [AdminReviewController::class, 'approve']);
+    Route::patch('reviews/{id}/reject', [AdminReviewController::class, 'reject']);
+
+    // Reports (8.19 - 8.20)
+    Route::get('reports', [AdminReportController::class, 'index']);
+    Route::patch('reports/{id}', [AdminReportController::class, 'update']);
+});
+
+// Notifications (8.21 - 8.24) — any authenticated role
+Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::get('unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('read-all', [NotificationController::class, 'markAllRead']);
+    Route::patch('{id}/read', [NotificationController::class, 'markRead']);
 });
