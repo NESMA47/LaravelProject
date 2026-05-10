@@ -116,28 +116,40 @@ class JobController extends Controller
         ]);
     }
 
-    // 8.8: Hard delete job
-    public function destroy(string $id): JsonResponse
-    {
-        $job = Job::find($id);
+public function destroy(string $id): JsonResponse
+{
+    $job = Job::find($id);
 
-        if (! $job) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Job not found.',
-            ], 404);
-        }
+    if (! $job) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Job not found.',
+        ], 404);
+    }
 
-        // Applications remain with snapshots
+    try {
         $job->forceDelete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Job permanently deleted.',
+            'message' => 'Job has been permanently removed.',
         ]);
-    }
 
-    // 8.9: Post job on behalf of employer
+    } catch (\Illuminate\Database\QueryException $e) {
+        if ($e->getCode() == '23000') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This job cannot be deleted because it is linked to other data (like skills or applications). You can reject it instead.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred while deleting the job.',
+        ], 500);
+    }
+}
+
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
