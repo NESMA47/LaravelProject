@@ -91,7 +91,17 @@ class AuthController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        if ($request->hasFile('avatar')) {
+        if ($request->boolean('remove_avatar')) {
+            if ($user->avatar_file_id) {
+                $oldFile = $user->avatarFile;
+                $user->avatar_url = null;
+                $user->avatar_file_id = null;
+                $user->save();
+                if ($oldFile) {
+                    $this->fileService->delete($oldFile);
+                }
+            }
+        } elseif ($request->hasFile('avatar')) {
             $file = $this->fileService->upload(
                 $request->file('avatar'),
                 $user,
