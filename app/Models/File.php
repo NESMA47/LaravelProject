@@ -19,6 +19,7 @@ class File extends Model
         'mime_type',
         'size_bytes',
         'storage_path',
+        'cloudinary_public_id',
         'url',
         'file_type',
         'entity_type',

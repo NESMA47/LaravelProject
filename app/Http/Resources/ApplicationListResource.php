@@ -15,6 +15,7 @@ class ApplicationListResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'job_id' => $this->job_id,
             'current_status' => $this->current_status,
             'job_removed_at' => $this->job_removed_at,
             'applied_at' => $this->applied_at,
