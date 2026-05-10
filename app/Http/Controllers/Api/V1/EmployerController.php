@@ -16,6 +16,16 @@ class EmployerController extends Controller
     public function index(Request $request): JsonResponse
     {
         $employers = Employer::query()
+            ->with(['jobs' => function ($q) {
+                $q->where('status', 'active')
+                  ->whereNull('deleted_at')
+                  ->where(function ($q2) {
+                      $q2->whereNull('expires_at')
+                         ->orWhere('expires_at', '>', now());
+                  })
+                  ->latest()
+                  ->take(3);
+            }])
             ->orderBy('company_name')
             ->paginate($request->input('per_page', 15));
 

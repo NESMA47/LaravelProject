@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\JobSearchRequest;
 use App\Http\Resources\JobDetailResource;
 use App\Http\Resources\JobListResource;
+use App\Models\Candidate;
 use App\Models\Category;
 use App\Models\Employer;
 use App\Models\Job;
@@ -171,9 +172,24 @@ class JobController extends Controller
             $job->increment('views_count');
         }
 
+        $hasApplied = false;
+        $user = auth('sanctum')->user();
+        if ($user && $user->role === 'candidate') {
+            $candidate = Candidate::where('user_id', $user->id)->first();
+            if ($candidate) {
+                $hasApplied = $job->applications()
+                    ->where('candidate_id', $candidate->id)
+                    ->whereNull('withdrawn_at')
+                    ->exists();
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'data' => new JobDetailResource($job),
+            'data' => array_merge(
+                (new JobDetailResource($job))->toArray(request()),
+                ['has_applied' => $hasApplied],
+            ),
         ]);
     }
 }

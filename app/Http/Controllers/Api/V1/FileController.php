@@ -32,8 +32,8 @@ class FileController extends Controller
         // Auto-update related entity fields and replace old files
         match ($fileType) {
             'avatar' => $this->handleAvatarUpload($user, $file),
-            'company_logo' => $this->handleCompanyLogoUpload($entityId, $file),
-            'company_cover' => $this->handleCompanyCoverUpload($entityId, $file),
+            'company_logo' => $this->handleCompanyLogoUpload($user, $file),
+            'company_cover' => $this->handleCompanyCoverUpload($user, $file),
             default => null,
         };
 
@@ -60,13 +60,9 @@ class FileController extends Controller
         $user->save();
     }
 
-    private function handleCompanyLogoUpload(?string $employerId, $file): void
+    private function handleCompanyLogoUpload($user, $file): void
     {
-        if (! $employerId) {
-            return;
-        }
-
-        $employer = Employer::find($employerId);
+        $employer = $user->employer;
         if (! $employer) {
             return;
         }
@@ -86,13 +82,9 @@ class FileController extends Controller
         $employer->save();
     }
 
-    private function handleCompanyCoverUpload(?string $employerId, $file): void
+    private function handleCompanyCoverUpload($user, $file): void
     {
-        if (! $employerId) {
-            return;
-        }
-
-        $employer = Employer::find($employerId);
+        $employer = $user->employer;
         if (! $employer) {
             return;
         }
