@@ -33,6 +33,24 @@ class JobController extends Controller
         return $job->employer_id === $employer->id;
     }
 
+    // Authenticated: show single job (owner only)
+    public function show(string $id): JsonResponse
+    {
+        $job = Job::with(['category', 'jobSkills.skill'])->findOrFail($id);
+
+        if (! $this->belongsToEmployer($job)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Forbidden.',
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => new JobResource($job),
+        ]);
+    }
+
     // Authenticated: list my jobs
     public function index(Request $request): JsonResponse
     {

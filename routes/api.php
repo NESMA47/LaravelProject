@@ -105,6 +105,7 @@ Route::middleware(['auth:sanctum', EnsureEmployer::class])->prefix('employer')->
 
     // --- تعديل قسم الوظائف هنا ---
     Route::get('jobs', [EmployerJobController::class, 'index']);          // عرض كل وظائف صاحب العمل
+    Route::get('jobs/{id}', [EmployerJobController::class, 'show']);     // عرض وظيفة واحدة
     Route::post('jobs', [EmployerJobController::class, 'store']);         // إنشاء وظيفة جديدة
 
     Route::put('jobs/{id}', [EmployerJobController::class, 'update']);
