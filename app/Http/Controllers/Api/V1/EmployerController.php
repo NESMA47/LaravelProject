@@ -54,7 +54,8 @@ class EmployerController extends Controller
             ], 404);
         }
 
-        $activeJobs = Job::where('employer_id', $employer->id)
+        $activeJobs = Job::with(['category', 'jobSkills.skill'])
+            ->where('employer_id', $employer->id)
             ->where('status', 'active')
             ->whereNull('deleted_at')
             ->where(function ($q) {
@@ -66,6 +67,7 @@ class EmployerController extends Controller
             ->get();
 
         $recentReviews = $employer->reviews()
+            ->with('candidate.user')
             ->where('is_approved', true)
             ->latest()
             ->take(3)

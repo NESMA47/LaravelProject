@@ -27,13 +27,7 @@ class EmployerPublicResource extends JsonResource
             'average_rating' => $this->average_rating,
             'total_reviews' => $this->total_reviews,
             'active_jobs' => $this->whenLoaded('jobs', function () {
-                return $this->jobs->map(fn ($job) => [
-                    'id' => $job->id,
-                    'title' => $job->title,
-                    'slug' => $job->slug,
-                    'type' => $job->type,
-                    'location' => $job->location,
-                ])->values();
+                return JobListResource::collection($this->jobs);
             }),
             'recent_reviews' => CompanyReviewResource::collection($this->whenLoaded('reviews')),
         ];

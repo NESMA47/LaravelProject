@@ -33,10 +33,14 @@ class CompanyReviewResource extends JsonResource
         ];
 
         if (! $this->is_anonymous && $this->relationLoaded('candidate') && $this->candidate) {
+            $candidateName = trim(($this->candidate->user?->first_name ?? '') . ' ' . ($this->candidate->user?->last_name ?? ''));
+            $data['candidate_name'] = $candidateName ?: 'Anonymous';
             $data['candidate'] = [
                 'id' => $this->candidate->id,
-                'name' => $this->candidate->user?->first_name . ' ' . $this->candidate->user?->last_name,
+                'name' => $candidateName,
             ];
+        } else {
+            $data['candidate_name'] = 'Anonymous';
         }
 
         if ($this->relationLoaded('employer') && $this->employer) {

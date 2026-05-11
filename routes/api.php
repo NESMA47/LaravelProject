@@ -55,6 +55,12 @@ Route::get('skills/autocomplete', [SkillController::class, 'autocomplete']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('files/upload', [FileController::class, 'upload']);
 
+    // File download — accessible by owner or admin
+    Route::get('files/{id}/download', [FileController::class, 'downloadFile']);
+
+    // Resume download — accessible by candidate (owner) or employer (job owner)
+    Route::get('applications/{id}/resume', [FileController::class, 'downloadResume']);
+
     // All authenticated users can create skills
     Route::post('skills', [SkillController::class, 'store']);
 });
